@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DocuMind — Enterprise Document Q&amp;A</title>
+<link rel="stylesheet" href="/static/css/styles.css" />
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============================= SIDEBAR ============================= -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+      <div class="wordmark">
+        <span class="wordmark-mark" aria-hidden="true"></span>
+        <span class="wordmark-text">DocuMind</span>
+      </div>
+      <button class="icon-btn" id="theme-toggle" type="button" aria-label="Switch to dark theme" title="Switch theme">
+        <svg class="icon icon-sun" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.6 19.4l1.7-1.7M17.7 6.3l1.7-1.7"/></svg>
+        <svg class="icon icon-moon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z"/></svg>
+      </button>
+    </div>
+
+    <button class="new-chat-btn" id="new-chat-btn" type="button">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+      New conversation
+    </button>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-head">
+        <h2>Knowledge base</h2>
+        <span class="muted" id="doc-count">0 documents</span>
+      </div>
+
+      <label class="dropzone" id="dropzone" for="file-input">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M5 16v2a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-2"/></svg>
+        <span>Drop a file or <span class="link-text">browse</span></span>
+        <span class="muted small">.txt or .md</span>
+        <input type="file" id="file-input" accept=".txt,.md" hidden />
+      </label>
+
+      <ul class="doc-list" id="doc-list" aria-live="polite"></ul>
+      <p class="empty-hint" id="doc-empty-hint">No documents indexed yet. Upload one to start asking questions.</p>
+    </div>
+
+    <div class="sidebar-bottom">
+      <div class="status-row">
+        <span class="status-dot" id="health-dot"></span>
+        <span id="health-text">Checking backend…</span>
+      </div>
+      <div class="status-row muted small" id="provider-row"></div>
+    </div>
+  </aside>
+
+  <button class="sidebar-backdrop" id="sidebar-backdrop" tabindex="-1" aria-hidden="true"></button>
+
+  <!-- ============================== CHAT ============================== -->
+  <main class="chat">
+    <header class="chat-header">
+      <button class="icon-btn mobile-only" id="sidebar-open-btn" type="button" aria-label="Open knowledge base panel">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <div>
+        <h1 id="chat-title">New conversation</h1>
+        <p class="chat-subtitle">Answers are grounded in your uploaded documents, with sources cited.</p>
+      </div>
+    </header>
+
+    <div class="messages" id="messages" aria-live="polite">
+      <div class="empty-state" id="empty-state">
+        <div class="empty-state-mark" aria-hidden="true"></div>
+        <h2>Ask anything about your documents</h2>
+        <p>Upload an HR policy, a security guideline, a process doc — then ask a question. Every answer links back to the exact passage it came from.</p>
+        <div class="suggestion-row" id="suggestion-row"></div>
+      </div>
+    </div>
+
+    <form class="composer" id="composer">
+      <textarea
+        id="query-input"
+        rows="1"
+        placeholder="Ask a question about your documents…"
+        aria-label="Message"
+      ></textarea>
+      <button type="submit" class="send-btn" id="send-btn" aria-label="Send message" disabled>
+        <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+    </form>
+    <p class="composer-hint">Enter to send · Shift+Enter for a new line</p>
+  </main>
+</div>
+
+<!-- message + citation templates (cloned by app.js) -->
+<template id="tpl-user-msg">
+  <div class="msg msg-user">
+    <div class="bubble"></div>
+  </div>
+</template>
+
+<template id="tpl-assistant-msg">
+  <div class="msg msg-assistant">
+    <div class="avatar" aria-hidden="true">D</div>
+    <div class="msg-body">
+      <div class="bubble"></div>
+      <div class="sources"></div>
+    </div>
+  </div>
+</template>
+
+<template id="tpl-source-chip">
+  <details class="source-chip">
+    <summary>
+      <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 3h7l5 5v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M14 3v5h5"/></svg>
+      <span class="source-filename"></span>
+      <span class="score-bar"><span class="score-bar-fill"></span></span>
+      <span class="score-value"></span>
+    </summary>
+    <p class="source-text"></p>
+  </details>
+</template>
+
+<template id="tpl-thinking">
+  <div class="msg msg-assistant msg-thinking">
+    <div class="avatar" aria-hidden="true">D</div>
+    <div class="msg-body">
+      <div class="bubble thinking-dots"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+</template>
+
+<template id="tpl-doc-item">
+  <li class="doc-item">
+    <svg class="icon icon-sm doc-item-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 3h7l5 5v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M14 3v5h5"/></svg>
+    <div class="doc-item-meta">
+      <span class="doc-item-name"></span>
+      <span class="doc-item-sub"></span>
+    </div>
+    <span class="doc-item-status"></span>
+    <button class="icon-btn icon-btn-ghost doc-item-delete" type="button" aria-label="Delete document">
+      <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m-9 0 1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13"/></svg>
+    </button>
+  </li>
+</template>
+
+<script src="/static/js/app.js"></script>
+</body>
+</html>

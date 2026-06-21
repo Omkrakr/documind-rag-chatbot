@@ -1,0 +1,23 @@
+Password and Authentication Policy
+
+All employees must enable multi-factor authentication on their corporate email and VPN accounts within the first week of joining. Passwords must be at least 14 characters long and are rotated every 180 days. Reusing any of the last 10 passwords is blocked automatically by the identity provider.
+
+Device Security
+
+Company laptops are enrolled in mobile device management and must have disk encryption enabled at all times. Personal devices used to access company email must be enrolled in the BYOD program and can be remotely wiped if lost or stolen. Jailbroken or rooted devices are not permitted to access any company system.
+
+Data Classification
+
+Data is classified into four tiers: Public, Internal, Confidential, and Restricted. Restricted data, such as customer financial records, may only be stored in approved cloud environments and must never be emailed or copied to personal storage. Confidential data requires encryption at rest and in transit.
+
+Incident Reporting
+
+Suspected security incidents, including phishing emails and lost devices, must be reported to the security team within 1 hour of discovery via the #security-incidents channel or the emergency hotline. The security team aims to acknowledge reports within 15 minutes during business hours and within 1 hour outside business hours.
+
+Third-Party Access
+
+Vendors and contractors requesting access to internal systems must go through a security review and sign a data processing agreement before any credentials are issued. Access is granted for the minimum duration necessary and automatically expires after 90 days unless renewed.
+
+VPN and Network Access
+
+Access to internal systems from outside the office requires the corporate VPN client. Split tunneling is disabled by default. Any request to enable split tunneling for a specific use case must be approved by the infrastructure team and logged.
